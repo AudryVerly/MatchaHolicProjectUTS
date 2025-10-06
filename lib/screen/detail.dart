@@ -20,6 +20,24 @@ class Detail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Detail Profil')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Berhasil'),
+              content: Text('$name berhasil ditambahkan sebagai teman!'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        },
+        child: const Icon(Icons.person_add),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Card(
@@ -105,7 +123,7 @@ class Detail extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                        Text(biografi)
+                        Text(biografi),
                       ],
                     ),
                   ),
