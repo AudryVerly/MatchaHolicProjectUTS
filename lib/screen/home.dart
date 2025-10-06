@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/main.dart';
 import 'package:flutter_matchaholic_project_uts/screen/detail.dart';
 import '../class/mahasiswa.dart';
 
@@ -71,7 +72,7 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Daftar Mahasiswa')),
-
+      drawer: const MyDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
