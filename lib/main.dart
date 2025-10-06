@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/screen/editprofile.dart';
 import 'package:flutter_matchaholic_project_uts/screen/home.dart';
 
 void main() {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       //routing
       routes: {
         'home': (context) => const Home(),
-        // 'editprofile': (context)=> const,
+        'editprofile': (context) => const Editprofile(),
       },
     );
   }
