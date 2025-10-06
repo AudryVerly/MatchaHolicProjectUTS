@@ -6,115 +6,73 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Mahasiswa'),
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: mahasiswas.length,
-        itemBuilder: (context, index) {
-          final mahasiswa = mahasiswas[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Foto Mahasiswa
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      mahasiswa.photo,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.person,
-                            size: 40,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  // Informasi Mahasiswa
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          mahasiswa.name,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'NRP: ${mahasiswa.nrp}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          mahasiswa.program,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Tombol Lihat Detail
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to detail profile
-                            // You can implement this navigation later
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Lihat detail ${mahasiswa.name}'),
-                                duration: const Duration(seconds: 1),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                          ),
-                          child: const Text('Lihat Detail Profile'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    List<Widget> widMahasiswas() {
+      List<Widget> temp = [];
+      int i = 0;
+      while (i < mahasiswas.length) {
+        Widget w = Container(
+          margin: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(128, 128, 128, 0.5),
+                spreadRadius: -6,
+                blurRadius: 8,
+                offset: const Offset(8, 7),
               ),
+            ],
+          ),
+          child: Card(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(15),
+                  child: Text(
+                    mahasiswas[i].name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Image.network(mahasiswas[i].photo),
+                Container(
+                  margin: const EdgeInsets.all(20),
+                  child: Text(mahasiswas[i].nrp),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'detailprofile');
+                  },
+                  child: const Text("Lihat Detail Profile"),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        );
+        temp.add(w);
+        i++;
+      }
+      return temp;
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Daftar Mahasiswa')),
+
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: widMahasiswas(),
+            ),
+            Divider(height: 100),
+          ],
+        ),
       ),
     );
   }
+
+ 
 }
