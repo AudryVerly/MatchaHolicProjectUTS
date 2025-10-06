@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/screen/detail.dart';
 import '../class/mahasiswa.dart';
 
 class Home extends StatelessWidget {
@@ -10,6 +11,7 @@ class Home extends StatelessWidget {
       List<Widget> temp = [];
       int i = 0;
       while (i < mahasiswas.length) {
+        var mhs = mahasiswas[i];
         Widget w = Container(
           margin: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -28,21 +30,32 @@ class Home extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.all(15),
                   child: Text(
-                    mahasiswas[i].name,
+                    mhs.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                Image.network(mahasiswas[i].photo),
+                Image.network(mhs.photo),
                 Container(
                   margin: const EdgeInsets.all(20),
-                  child: Text(mahasiswas[i].nrp),
+                  child: Text(mhs.nrp),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, 'detailprofile');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Detail(
+                          mhs.name,
+                          mhs.photo,
+                          mhs.program,
+                          mhs.nrp,
+                          mhs.biografi,
+                        ),
+                      ),
+                    );
                   },
                   child: const Text("Lihat Detail Profile"),
                 ),
@@ -73,6 +86,4 @@ class Home extends StatelessWidget {
       ),
     );
   }
-
- 
 }
