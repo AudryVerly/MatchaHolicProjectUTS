@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/screen/editprofile.dart';
 import 'package:flutter_matchaholic_project_uts/screen/home.dart';
+import 'package:flutter_matchaholic_project_uts/screen/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  checkUser().then((String result) {
+    if (result == '')
+      runApp(MyLogin());
+    else {
+      active_user = result;
+      runApp(MyApp());
+    }
+  });
+}
+
+String active_user = "";
+Future<String> checkUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  String user_id = prefs.getString("user_id") ?? '';
+  return user_id;
+}
+
+void doLogout() async {
+  //later, we use web service here to check the user id and password
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove("user_id");
+  String user_id = prefs.getString("user_id") ?? '';
+  main();
 }
 
 class MyApp extends StatelessWidget {
@@ -83,9 +109,9 @@ class MyDrawer extends StatelessWidget {
       elevation: 16.0,
       child: Column(
         children: <Widget>[
-          const UserAccountsDrawerHeader(
+          UserAccountsDrawerHeader(
             accountName: Text("username"),
-            accountEmail: Text("user@gmail.com"),
+            accountEmail: Text(active_user),
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
             ),
@@ -104,13 +130,13 @@ class MyDrawer extends StatelessWidget {
               Navigator.popAndPushNamed(context, 'editprofile');
             },
           ),
-          // ListTile(
-          //   title: const Text("Logout"),
-          //   leading: const Icon(Icons.logout),
-          //   onTap: () {
-          //     Navigator.popAndPushNamed(context, 'logout');
-          //   },
-          // ),
+          ListTile(
+            title: const Text("Logout"),
+            leading: const Icon(Icons.logout),
+            onTap: () {
+              doLogout();
+            },
+          ),
         ],
       ),
     );
