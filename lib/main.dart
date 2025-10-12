@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/screen/editprofile.dart';
 import 'package:flutter_matchaholic_project_uts/screen/home.dart';
 import 'package:flutter_matchaholic_project_uts/screen/login.dart';
@@ -18,6 +19,8 @@ void main() {
 }
 
 String active_user = "";
+Mahasiswa? loggedInUser; //mengambil_data_user_yg_lg_login
+
 Future<String> checkUser() async {
   final prefs = await SharedPreferences.getInstance();
   String user_id = prefs.getString("user_id") ?? '';
@@ -34,7 +37,6 @@ void doLogout() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Home(),
+      home: const Home(), //the_first_page_to_launch_it's_the_home.dart
       //routing
       routes: {
         'home': (context) => const Home(),
@@ -63,12 +65,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
-
   void _incrementCounter() {
-    setState(() {
-      // _counter++;
-    });
+    setState(() {});
   }
 
   @override
@@ -76,26 +74,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
         title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-          ],
+          children: <Widget>[],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
@@ -110,7 +96,7 @@ class MyDrawer extends StatelessWidget {
       child: Column(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text("username"),
+            accountName: Text(loggedInUser?.name ?? "Username"),
             accountEmail: Text(active_user),
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage("https://i.pravatar.cc/150"),

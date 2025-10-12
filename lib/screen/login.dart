@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void doLogin() async {
-  //later, we use web service here to check the user id and password
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setString("user_id", active_user);
-  main();
+Future<bool> doLogin(String email, String pwd) async {
+  Mahasiswa? foundUser;
+  try {
+    foundUser = mahasiswas.firstWhere(
+      (m) => m.email == email && m.password == pwd,
+    );
+  } catch (e) {
+    foundUser = null;
+  }
+  if (foundUser == null) {
+    return false;
+  } else {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("user_id", active_user);
+    loggedInUser = foundUser;
+    main();
+    return true;
+  }
 }
 
 class MyLogin extends StatelessWidget {
@@ -28,6 +42,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController _pwdController = TextEditingController();
   String _emailError = "";
 
   bool _validateEmail(String email) {
@@ -73,6 +88,7 @@ class _LoginState extends State<Login> {
             Padding(
               padding: EdgeInsets.all(10),
               child: TextField(
+                controller: _pwdController,
                 obscureText: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -90,11 +106,38 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_validateEmail(active_user)) {
-                      setState(() {
-                        doLogin(); // Call the login function
-                      });
+                      // Call the login function
+                      bool successLogin = await doLogin(
+                        active_user,
+                        _pwdController.text,
+                      );
+                      if (!successLogin) {
+                        //if_the_login_failed
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Login Failed"),
+                              content: const Text(
+                                "Incorrect email or password. Please try again.",
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: const Text("OK"),
+                                  onPressed: () {
+                                    Navigator.popAndPushNamed(context, 'login');
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     } else {
                       setState(() {
                         _emailError = 'Invalid email format';
