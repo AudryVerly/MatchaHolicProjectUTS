@@ -113,7 +113,12 @@ class _EditProfileState extends State<Editprofile> {
                               value: program,
                             );
                           }).toList(),
-                          onChanged: (value) {},
+                          onChanged: (value) {
+                            setState(() {
+                              _userProgram = value ?? '';
+                              _progController.text = value ?? '';
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -160,6 +165,7 @@ class _EditProfileState extends State<Editprofile> {
                   ElevatedButton(
                     style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
                     onPressed: () async {
+                      //mengupdate_value_user_yg_lg_login_setelah_diedit
                       if (loggedInUser != null) {
                         loggedInUser = Mahasiswa(
                           id: loggedInUser!.id,
@@ -167,11 +173,12 @@ class _EditProfileState extends State<Editprofile> {
                           email: loggedInUser!.email,
                           password: loggedInUser!.password,
                           photo: loggedInUser!.photo,
-                          program: loggedInUser!.program,
+                          program: _progController.text,
                           nrp: loggedInUser!.nrp,
                           biografi: _bioController.text,
                         );
                       }
+                      //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
                       int index = mahasiswas.indexWhere(
                         (m) => m.id == loggedInUser!.id,
                       );
