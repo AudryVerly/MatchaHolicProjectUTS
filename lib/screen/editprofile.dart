@@ -12,10 +12,15 @@ class Editprofile extends StatefulWidget {
 class _EditProfileState extends State<Editprofile> {
   String _userProgram = loggedInUser?.program ?? mahasiswas[0].program;
   final List<String> allPrograms = ["IMES", "DSAI", "DMT", "ITDD", "GD", "NCS"];
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _progController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _nameController.text = loggedInUser?.name ?? "Username";
+    _bioController.text = loggedInUser?.biografi ?? "Biografi";
   }
 
   Widget build(BuildContext context) {
@@ -41,14 +46,6 @@ class _EditProfileState extends State<Editprofile> {
                     backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
                   ),
                   const SizedBox(height: 15),
-                  Text(
-                    loggedInUser?.name ?? "Username",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
 
                   Container(
                     width: double.infinity,
@@ -68,7 +65,39 @@ class _EditProfileState extends State<Editprofile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Program / Lab',
+                          "Nama:",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(controller: _nameController),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          blurRadius: 5,
+                          offset: const Offset(2, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Program / Lab:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -110,15 +139,61 @@ class _EditProfileState extends State<Editprofile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Biografi',
+                          "Biografi:",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                        Text(loggedInUser?.biografi ?? "Biografi"),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _bioController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          minLines: 3,
+                        ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 15),
+
+                  ElevatedButton(
+                    style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
+                    onPressed: () async {
+                      if (loggedInUser != null) {
+                        loggedInUser = Mahasiswa(
+                          id: loggedInUser!.id,
+                          name: _nameController.text,
+                          email: loggedInUser!.email,
+                          password: loggedInUser!.password,
+                          photo: loggedInUser!.photo,
+                          program: loggedInUser!.program,
+                          nrp: loggedInUser!.nrp,
+                          biografi: _bioController.text,
+                        );
+                      }
+                      int index = mahasiswas.indexWhere(
+                        (m) => m.id == loggedInUser!.id,
+                      );
+                      if (index != -1) {
+                        mahasiswas[index] = loggedInUser!;
+                      }
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text('Edit Profil'),
+                          content: Text('Edit profil berhasil!'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, 'home'),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text('SUBMIT'),
                   ),
                 ],
               ),
