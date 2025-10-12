@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
 
 class Editprofile extends StatefulWidget {
@@ -9,7 +10,8 @@ class Editprofile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<Editprofile> {
-  String _programCategory = "IMES";
+  String _userProgram = loggedInUser?.program ?? mahasiswas[0].program;
+  final List<String> allPrograms = ["IMES", "DSAI", "DMT", "ITDD", "GD", "NCS"];
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _EditProfileState extends State<Editprofile> {
                   ),
                   const SizedBox(height: 15),
                   Text(
-                    "Isinya nama lengkap user yg login",
+                    loggedInUser?.name ?? "Username",
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -73,25 +75,15 @@ class _EditProfileState extends State<Editprofile> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        DropdownButton(
-                          items: const [
-                            DropdownMenuItem(
-                              value: "IMES",
-                              child: Text("IMES"),
-                            ),
-                            DropdownMenuItem(
-                              value: "DSAI",
-                              child: Text("DSAI"),
-                            ),
-                            DropdownMenuItem(value: "DMT", child: Text("DMT")),
-                            DropdownMenuItem(
-                              value: "ITDD",
-                              child: Text("ITDD"),
-                            ),
-                            DropdownMenuItem(value: "GD", child: Text("GD")),
-                            DropdownMenuItem(value: "NCS", child: Text("NCS")),
-                          ],
-                          value: _programCategory,
+                        DropdownButton<String>(
+                          value: _userProgram,
+                          //.map_is_a_method_for_iterate_a_list
+                          items: allPrograms.map((program) {
+                            return DropdownMenuItem(
+                              child: Text(program),
+                              value: program,
+                            );
+                          }).toList(),
                           onChanged: (value) {},
                         ),
                       ],
@@ -124,7 +116,7 @@ class _EditProfileState extends State<Editprofile> {
                             fontSize: 16,
                           ),
                         ),
-                        Text("Isinya bio dari user yg lg login"),
+                        Text(loggedInUser?.biografi ?? "Biografi"),
                       ],
                     ),
                   ),
