@@ -43,22 +43,29 @@ class Home extends StatelessWidget {
                   margin: const EdgeInsets.all(20),
                   child: Text(mhs.nrp),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Detail(
-                          mhs.name,
-                          mhs.photo,
-                          mhs.program,
-                          mhs.nrp,
-                          mhs.biografi,
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: ElevatedButton(
+                    style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Detail(
+                            mhs.name,
+                            mhs.photo,
+                            mhs.program,
+                            mhs.nrp,
+                            mhs.biografi,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: const Text("Lihat Detail Profile"),
+                      );
+                    },
+                    child: const Text("Lihat Detail Profile"),
+                  ),
                 ),
               ],
             ),
