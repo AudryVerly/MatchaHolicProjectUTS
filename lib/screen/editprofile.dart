@@ -10,17 +10,17 @@ class Editprofile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<Editprofile> {
-  String _userProgram = loggedInUser?.program ?? mahasiswas[0].program;
   final List<String> allPrograms = ["IMES", "DSAI", "DMT", "ITDD", "GD", "NCS"];
+  String _userProgram = "IMES";
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _progController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _nameController.text = loggedInUser?.name ?? "Username";
     _bioController.text = loggedInUser?.biografi ?? "Biografi";
+    _userProgram = loggedInUser?.program ?? "IMES";
   }
 
   Widget build(BuildContext context) {
@@ -115,8 +115,7 @@ class _EditProfileState extends State<Editprofile> {
                           }).toList(),
                           onChanged: (value) {
                             setState(() {
-                              _userProgram = value ?? '';
-                              _progController.text = value ?? '';
+                              _userProgram = value ?? allPrograms[0];
                             });
                           },
                         ),
@@ -162,45 +161,63 @@ class _EditProfileState extends State<Editprofile> {
                   ),
                   const SizedBox(height: 15),
 
-                  ElevatedButton(
-                    style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
-                    onPressed: () async {
-                      //mengupdate_value_user_yg_lg_login_setelah_diedit
-                      if (loggedInUser != null) {
-                        loggedInUser = Mahasiswa(
-                          id: loggedInUser!.id,
-                          name: _nameController.text,
-                          email: loggedInUser!.email,
-                          password: loggedInUser!.password,
-                          photo: loggedInUser!.photo,
-                          program: _progController.text,
-                          nrp: loggedInUser!.nrp,
-                          biografi: _bioController.text,
-                        );
-                      }
-                      //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
-                      int index = mahasiswas.indexWhere(
-                        (m) => m.id == loggedInUser!.id,
-                      );
-                      if (index != -1) {
-                        mahasiswas[index] = loggedInUser!;
-                      }
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text('Edit Profil'),
-                          content: Text('Edit profil berhasil!'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, 'home'),
-                              child: const Text('OK'),
-                            ),
-                          ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          elevation: WidgetStateProperty.all(5),
                         ),
-                      );
-                    },
-                    child: const Text('SUBMIT'),
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'editprofile');
+                        },
+                        child: const Text('BATAL'),
+                      ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          elevation: WidgetStateProperty.all(5),
+                        ),
+                        onPressed: () async {
+                          //mengupdate_value_user_yg_lg_login_setelah_diedit
+                          if (loggedInUser != null) {
+                            loggedInUser = Mahasiswa(
+                              id: loggedInUser!.id,
+                              name: _nameController.text,
+                              email: loggedInUser!.email,
+                              password: loggedInUser!.password,
+                              photo: loggedInUser!.photo,
+                              program: _userProgram,
+                              nrp: loggedInUser!.nrp,
+                              biografi: _bioController.text,
+                            );
+                          }
+                          //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
+                          int index = mahasiswas.indexWhere(
+                            (m) => m.id == loggedInUser!.id,
+                          );
+                          if (index != -1) {
+                            mahasiswas[index] = loggedInUser!;
+                          }
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text('Edit Profil'),
+                              content: Text('Edit profil berhasil!'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context); // Close dialog
+                                    Navigator.pushNamed(context, 'editprofile');
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: const Text('SUBMIT'),
+                      ),
+                    ],
                   ),
                 ],
               ),
