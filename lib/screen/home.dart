@@ -92,24 +92,18 @@ class _HomeState extends State<Home> {
                       horizontal: 20,
                       vertical: 10,
                     ),
-                    // child: ElevatedButton(
-                    //   style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
-                    //   onPressed: () {
-                    //     Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //         builder: (context) => Detail(
-                    //           // mhs.name,
-                    //           mhs.photo,
-                    //           mhs.program,
-                    //           mhs.nrp,
-                    //           mhs.biografi,
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    //   child: const Text("Lihat Detail Profile"),
-                    // ),
+                    child: ElevatedButton(
+                      style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
+                      onPressed: () {
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder:(context) =>
+                              Detail(mahasiswaID:Mhs[index].id ),
+                          ),
+                        );
+                      },
+                      child: const Text("Lihat Detail Profile"),
+                    ),
                   ),
                 ],
               ),
@@ -142,93 +136,4 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   List<Widget> widMahasiswas() {
-  //     List<Widget> temp = [];
-  //     int i = 0;
-  //     while (i < mahasiswas.length) {
-  //       var mhs = mahasiswas[i];
-  //       Widget w = Container(
-  //         margin: const EdgeInsets.all(15),
-  //         decoration: BoxDecoration(
-  //           boxShadow: [
-  //             BoxShadow(
-  //               color: Color.fromRGBO(128, 128, 128, 0.5),
-  //               spreadRadius: -6,
-  //               blurRadius: 8,
-  //               offset: const Offset(8, 7),
-  //             ),
-  //           ],
-  //         ),
-  //         child: Card(
-  //           child: Column(
-  //             children: [
-  //               Container(
-  //                 margin: const EdgeInsets.all(15),
-  //                 child: Text(
-  //                   mhs.name,
-  //                   style: const TextStyle(
-  //                     fontSize: 16,
-  //                     fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //               ),
-  //               Image.network(mhs.photo),
-  //               Container(
-  //                 margin: const EdgeInsets.all(20),
-  //                 child: Text(mhs.nrp),
-  //               ),
-  //               Container(
-  //                 margin: const EdgeInsets.symmetric(
-  //                   horizontal: 20,
-  //                   vertical: 10,
-  //                 ),
-  //                 child: ElevatedButton(
-  //                   style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
-  //                   onPressed: () {
-  //                     Navigator.push(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                         builder: (context) => Detail(
-  //                           mhs.name,
-  //                           mhs.photo,
-  //                           mhs.program,
-  //                           mhs.nrp,
-  //                           mhs.biografi,
-  //                         ),
-  //                       ),
-  //                     );
-  //                   },
-  //                   child: const Text("Lihat Detail Profile"),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //       temp.add(w);
-  //       i++;
-  //     }
-  //     return temp;
-  //   }
-
-  //   return Scaffold(
-  //     appBar: AppBar(title: const Text('Daftar Mahasiswa')),
-  //     drawer: const MyDrawer(),
-  //     body: SingleChildScrollView(
-  //       child: Column(
-  //         children: [
-  //           ListView(
-  //             shrinkWrap: true,
-  //             physics: NeverScrollableScrollPhysics(),
-  //             children: widMahasiswas(),
-  //           ),
-  //           Divider(height: 100),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
