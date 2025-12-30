@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Mahasiswa {
   int id;
   String name;
@@ -18,7 +20,22 @@ class Mahasiswa {
     required this.nrp,
     required this.biografi,
   });
+
+  factory Mahasiswa.fromJson(Map<String, dynamic> json) {
+    return Mahasiswa(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      photo: json['photo'] != null ? json['photo'].toString() : '',
+      program: json['program'] as String,
+      nrp: json['nrp'] as String,
+      biografi: json['biografi'] as String,
+    );
+  }
 }
+
+List<Mahasiswa> Mhs = [];
 
 var mahasiswas = <Mahasiswa>[
   Mahasiswa(
