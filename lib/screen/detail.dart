@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Detail extends StatefulWidget {
   int mahasiswaID;
@@ -15,6 +17,7 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   Mahasiswa? _mhs;
+  bool _isRequesting = false;
 
   Future<String> fetchData() async {
     final response = await http.post(
@@ -23,6 +26,57 @@ class _DetailState extends State<Detail> {
     );
     if (response.statusCode == 200) {
       return response.body;
+    } else {
+      throw Exception('Failed to read API');
+    }
+  }
+
+  Future<void> addFriend() async {
+    final prefs = await SharedPreferences.getInstance();
+    String senderId = prefs.getString("user_id") ?? '';
+
+    if (senderId.isEmpty) return;
+
+    final response = await http.post(
+      Uri.parse("https://ubaya.cloud/flutter/160422127/addfriend.php"),
+      body: {'senderid': senderId, 'receiverid': widget.mahasiswaID.toString()},
+    );
+
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+
+      String title = "Info";
+      String message = "Terjadi kesalahan";
+
+      if (json['result'] == 'success') {
+        title = "Berhasil";
+        message = "Pemintaan pertemanan dikirim";
+        setState(() {
+          _isRequesting = true;
+        });
+      } else if (json['result'] == 'exists') {
+        title = "info";
+        message = "Permintaan sudah ada / sudah berteman";
+
+        setState(() {
+          _isRequesting = true; // tetap disable
+        });
+      }
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text('Berhasil'),
+          content: Text('Permintaan pertemanan dikirim'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else {
       throw Exception('Failed to read API');
     }
@@ -139,15 +193,8 @@ class _DetailState extends State<Detail> {
       appBar: AppBar(title: const Text('Detail Profil')),
       body: tampilData(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => const AlertDialog(
-              title: Text('Berhasil'),
-              content: Text('Mahasiswa ditambahkan sebagai teman!'),
-            ),
-          );
-        },
+        onPressed: _isRequesting ? null : addFriend,
+        backgroundColor: _isRequesting ? Colors.grey : null,
         child: const Icon(Icons.person_add),
       ),
     );
