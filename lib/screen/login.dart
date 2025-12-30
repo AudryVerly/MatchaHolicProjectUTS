@@ -2,26 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-Future<bool> doLogin(String email, String pwd) async {
-  Mahasiswa? foundUser;
-  try {
-    foundUser = mahasiswas.firstWhere(
-      (m) => m.email == email && m.password == pwd,
-    );
-  } catch (e) {
-    foundUser = null;
-  }
-  if (foundUser == null) {
-    return false;
-  } else {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("user_id", active_user);
-    loggedInUser = foundUser;
-    main();
-    return true;
-  }
-}
+String active_user = "";
+String _user_email = "";
+String _user_password = "";
+// int _user_id = 0;
+String _error_login = "";
+String _emailError = "";
+
+// Future<bool> doLogin(String email, String pwd) async {
+//   Mahasiswa? foundUser;
+//   try {
+//     foundUser = mahasiswas.firstWhere(
+//       (m) => m.email == email && m.password == pwd,
+//     );
+//   } catch (e) {
+//     foundUser = null;
+//   }
+//   if (foundUser == null) {
+//     return false;
+//   } else {
+//     final prefs = await SharedPreferences.getInstance();
+//     prefs.setString("user_id", active_user);
+//     loggedInUser = foundUser;
+//     main();
+//     return true;
+//   }
+// }
 
 class MyLogin extends StatelessWidget {
   @override
@@ -42,8 +51,32 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwdController = TextEditingController();
-  String _emailError = "";
+
+  void doLogin() async {
+    final response = await http.post(
+      Uri.parse("https://ubaya.cloud/flutter/160422127/loginmahasiswa.php"),
+      body: {'email': _user_email, 'password': _user_password},
+    );
+
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString("user_id", json['data']['id'].toString());
+        prefs.setString("email", json['data']['email']);
+        prefs.setString("password", json['data']['password']);
+        main();
+      } else {
+        setState(() {
+          _error_login = "Incorrect user or password";
+        });
+      }
+    } else {
+      throw Exception('Failed to read API');
+    }
+  }
 
   bool _validateEmail(String email) {
     return email.isNotEmpty && email.contains('@');
@@ -77,7 +110,7 @@ class _LoginState extends State<Login> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    active_user = value;
+                    _user_email = value;
                     _emailError = _validateEmail(value)
                         ? ''
                         : 'Invalid email format';
@@ -95,6 +128,9 @@ class _LoginState extends State<Login> {
                   labelText: 'Password',
                   hintText: 'Enter secure password',
                 ),
+                onChanged: (value) {
+                  _user_password = value;
+                },
               ),
             ),
             Padding(
@@ -106,48 +142,66 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_validateEmail(active_user)) {
-                      // Call the login function
-                      bool successLogin = await doLogin(
-                        active_user,
-                        _pwdController.text,
-                      );
-                      if (!successLogin) {
-                        //if_the_login_failed
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Login Failed"),
-                              content: const Text(
-                                "Incorrect email or password. Please try again.",
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text("OK"),
-                                  onPressed: () {
-                                    Navigator.popAndPushNamed(context, 'login');
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    } else {
-                      setState(() {
-                        _emailError = 'Invalid email format';
-                      });
-                    }
+                  onPressed: () {
+                    doLogin();
                   },
                   child: Text('Login', style: TextStyle(fontSize: 25)),
                 ),
               ),
             ),
+            if (_error_login.isNotEmpty)
+              Text(_error_login, style: TextStyle(color: Colors.red)),
+            // Padding(
+            //   padding: EdgeInsets.all(10),
+            //   child: Container(
+            //     height: 50,
+            //     width: 300,
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //     child: ElevatedButton(
+            //       onPressed: () async {
+            //         if (_validateEmail(active_user)) {
+            //           // Call the login function
+            //           bool successLogin = await doLogin(
+            //             active_user,
+            //             _pwdController.text,
+            //           );
+            //           if (!successLogin) {
+            //             //if_the_login_failed
+            //             showDialog(
+            //               context: context,
+            //               builder: (BuildContext context) {
+            //                 return AlertDialog(
+            //                   title: const Text("Login Failed"),
+            //                   content: const Text(
+            //                     "Incorrect email or password. Please try again.",
+            //                   ),
+            //                   shape: RoundedRectangleBorder(
+            //                     borderRadius: BorderRadius.circular(12),
+            //                   ),
+            //                   actions: [
+            //                     TextButton(
+            //                       child: const Text("OK"),
+            //                       onPressed: () {
+            //                         Navigator.popAndPushNamed(context, 'login');
+            //                       },
+            //                     ),
+            //                   ],
+            //                 );
+            //               },
+            //             );
+            //           }
+            //         } else {
+            //           setState(() {
+            //             _emailError = 'Invalid email format';
+            //           });
+            //         }
+            //       },
+            //       child: Text('Login', style: TextStyle(fontSize: 25)),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
