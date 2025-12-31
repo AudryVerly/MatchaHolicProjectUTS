@@ -3,6 +3,7 @@ import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/screen/editprofile.dart';
 import 'package:flutter_matchaholic_project_uts/screen/home.dart';
 import 'package:flutter_matchaholic_project_uts/screen/login.dart';
+import 'package:flutter_matchaholic_project_uts/screen/requestlist.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
       routes: {
         'home': (context) => const Home(),
         'editprofile': (context) => const Editprofile(),
+        'requestlist': (context) => Requestlist(),
       },
     );
   }
@@ -114,6 +116,13 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.edit),
             onTap: () {
               Navigator.popAndPushNamed(context, 'editprofile');
+            },
+          ),
+          ListTile(
+            title: const Text("Requests"),
+            leading: const Icon(Icons.notifications),
+            onTap: () {
+              Navigator.popAndPushNamed(context, 'requestlist');
             },
           ),
           ListTile(

@@ -180,24 +180,24 @@ class _EditProfileState extends State<Editprofile> {
                         onPressed: () async {
                           //mengupdate_value_user_yg_lg_login_setelah_diedit
                           if (loggedInUser != null) {
-                            loggedInUser = Mahasiswa(
-                              id: loggedInUser!.id,
-                              name: _nameController.text,
-                              email: loggedInUser!.email,
-                              password: loggedInUser!.password,
-                              photo: loggedInUser!.photo,
-                              program: _userProgram,
-                              nrp: loggedInUser!.nrp,
-                              biografi: _bioController.text,
-                            );
+                            // loggedInUser = Mahasiswa(
+                            //   id: loggedInUser!.id,
+                            //   name: _nameController.text,
+                            //   email: loggedInUser!.email,
+                            //   password: loggedInUser!.password,
+                            //   photo: loggedInUser!.photo,
+                            //   program: _userProgram,
+                            //   nrp: loggedInUser!.nrp,
+                            //   biografi: _bioController.text,
+                            // );
                           }
                           //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
-                          int index = mahasiswas.indexWhere(
-                            (m) => m.id == loggedInUser!.id,
-                          );
-                          if (index != -1) {
-                            mahasiswas[index] = loggedInUser!;
-                          }
+                          // int index = mahasiswas.indexWhere(
+                          //   (m) => m.id == loggedInUser!.id,
+                          // );
+                          // if (index != -1) {
+                          //   mahasiswas[index] = loggedInUser!;
+                          // }
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
