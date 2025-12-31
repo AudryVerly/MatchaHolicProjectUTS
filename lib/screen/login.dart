@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
+import 'package:flutter_matchaholic_project_uts/screen/home.dart';
 import 'package:flutter_matchaholic_project_uts/screen/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -68,7 +69,13 @@ class _LoginState extends State<Login> {
         prefs.setString("user_id", json['data']['id'].toString());
         prefs.setString("email", json['data']['email']);
         prefs.setString("password", json['data']['password']);
+
+        loggedInUser = Mahasiswa.fromJson(json['data']);
         main();
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const Home()),
+        // );
       } else {
         setState(() {
           _error_login = "Incorrect user or password";

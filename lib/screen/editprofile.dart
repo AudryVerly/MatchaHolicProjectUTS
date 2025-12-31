@@ -43,7 +43,7 @@ class _EditProfileState extends State<Editprofile> {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
+                    backgroundImage: NetworkImage(loggedInUser?.photo ?? ""),
                   ),
                   const SizedBox(height: 15),
 

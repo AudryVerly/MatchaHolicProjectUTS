@@ -99,9 +99,9 @@ class MyDrawer extends StatelessWidget {
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(loggedInUser?.name ?? "Username"),
-            accountEmail: Text(active_user),
+            accountEmail: Text(loggedInUser?.email ?? "email"),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
+              backgroundImage: NetworkImage(loggedInUser?.photo ?? ""),
             ),
           ),
           ListTile(
@@ -115,7 +115,8 @@ class MyDrawer extends StatelessWidget {
             title: const Text("Edit Profile"),
             leading: const Icon(Icons.edit),
             onTap: () {
-              Navigator.popAndPushNamed(context, 'editprofile');
+              Navigator.pop(context);
+              Navigator.pushNamed(context, 'editprofile');
             },
           ),
           ListTile(

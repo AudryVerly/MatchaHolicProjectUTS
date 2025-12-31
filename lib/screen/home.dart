@@ -19,8 +19,9 @@ class _HomeState extends State<Home> {
   String _temp = 'Waiting API respond';
 
   Future<String> fetchData() async {
-    final response = await http.get(
+    final response = await http.post(
       Uri.parse("https://ubaya.cloud/flutter/160422127/mahasiswalist.php"),
+      body: {'id': loggedInUser?.id.toString() ?? ''},
     );
     if (response.statusCode == 200) {
       return response.body;
@@ -96,9 +97,10 @@ class _HomeState extends State<Home> {
                       style: ButtonStyle(elevation: WidgetStateProperty.all(5)),
                       onPressed: () {
                         Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder:(context) =>
-                              Detail(mahasiswaID:Mhs[index].id ),
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                Detail(mahasiswaID: Mhs[index].id),
                           ),
                         );
                       },
