@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
+import 'package:flutter_matchaholic_project_uts/screen/register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -151,6 +152,33 @@ class _LoginState extends State<Login> {
             ),
             if (_error_login.isNotEmpty)
               Text(_error_login, style: TextStyle(color: Colors.red)),
+
+            // Register Link
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Belum memiliki akun? '),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Register()),
+                      );
+                    },
+                    child: const Text(
+                      'Daftar di sini',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             // Padding(
             //   padding: EdgeInsets.all(10),
             //   child: Container(
