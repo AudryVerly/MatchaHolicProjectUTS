@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
 import 'package:flutter_matchaholic_project_uts/main.dart';
+import 'package:http/http.dart' as http;
 
 class Editprofile extends StatefulWidget {
   const Editprofile({super.key});
@@ -20,7 +23,31 @@ class _EditProfileState extends State<Editprofile> {
     super.initState();
     _nameController.text = loggedInUser?.name ?? "Username";
     _bioController.text = loggedInUser?.biografi ?? "Biografi";
-    _userProgram = loggedInUser?.program ?? "IMES";
+    _userProgram = loggedInUser!.program!;
+  }
+
+  Future<bool> submit() async {
+    final response = await http.post(
+      Uri.parse("https://ubaya.cloud/flutter/160422127/editprofile.php"),
+      body: {
+        'name': _nameController.text,
+        'program': _userProgram,
+        'biografi': _bioController.text,
+        'id': loggedInUser!.id.toString(),
+      },
+    );
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        loggedInUser!.name = _nameController.text;
+        loggedInUser!.program = _userProgram;
+        loggedInUser!.biografi = _bioController.text;
+        return true;
+      }
+      return false;
+    } else {
+      throw Exception('Failed to read API');
+    }
   }
 
   Widget build(BuildContext context) {
@@ -169,7 +196,8 @@ class _EditProfileState extends State<Editprofile> {
                           elevation: WidgetStateProperty.all(5),
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, 'editprofile');
+                          Navigator.pop(context);
+                          // Navigator.pushNamed(context, 'editprofile');
                         },
                         child: const Text('BATAL'),
                       ),
@@ -179,18 +207,37 @@ class _EditProfileState extends State<Editprofile> {
                         ),
                         onPressed: () async {
                           //mengupdate_value_user_yg_lg_login_setelah_diedit
-                          if (loggedInUser != null) {
-                            // loggedInUser = Mahasiswa(
-                            //   id: loggedInUser!.id,
-                            //   name: _nameController.text,
-                            //   email: loggedInUser!.email,
-                            //   password: loggedInUser!.password,
-                            //   photo: loggedInUser!.photo,
-                            //   program: _userProgram,
-                            //   nrp: loggedInUser!.nrp,
-                            //   biografi: _bioController.text,
-                            // );
+                          if (loggedInUser == null) return;
+                          bool success = await submit();
+
+                          if (!mounted) return;
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Sukses mengubah data'),
+                              ),
+                            );
+                            // Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Gagal mengubah data'),
+                              ),
+                            );
                           }
+                          // if (loggedInUser != null) {
+                          // loggedInUser = Mahasiswa(
+                          //   id: loggedInUser!.id,
+                          //   name: _nameController.text,
+                          //   email: loggedInUser!.email,
+                          //   password: loggedInUser!.password,
+                          //   photo: loggedInUser!.photo,
+                          //   program: _userProgram,
+                          //   nrp: loggedInUser!.nrp,
+                          //   biografi: _bioController.text,
+                          // );
+                          // }
                           //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
                           // int index = mahasiswas.indexWhere(
                           //   (m) => m.id == loggedInUser!.id,
@@ -207,7 +254,7 @@ class _EditProfileState extends State<Editprofile> {
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(context); // Close dialog
-                                    Navigator.pushNamed(context, 'editprofile');
+                                    // Navigator.pushNamed(context, 'editprofile');
                                   },
                                   child: const Text('OK'),
                                 ),
