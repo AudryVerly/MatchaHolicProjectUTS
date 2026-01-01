@@ -10,9 +10,12 @@ class Mahasiswa {
   String nrp;
   String biografi;
   List? friendRequest;
+  List? friends;
 
   int? requestId;
   int? senderId;
+  int? penerimaId;
+  int? temanId;
 
   Mahasiswa({
     required this.id,
@@ -24,8 +27,11 @@ class Mahasiswa {
     required this.nrp,
     required this.biografi,
     required this.friendRequest,
+    required this.friends,
     this.requestId,
     this.senderId,
+    this.penerimaId,
+    this.temanId,
   });
 
   factory Mahasiswa.fromJson(Map<String, dynamic> json) {
@@ -39,15 +45,23 @@ class Mahasiswa {
       nrp: json['nrp'] as String,
       biografi: json['biografi'] as String,
       friendRequest: json['friend_request'],
-    requestId: json['requestId'] != null
-        ? int.parse(json['requestId'].toString())
-        : null,
-    senderId: json['sender_id'] != null
-        ? int.parse(json['sender_id'].toString())
-        : null,
+      friends: json['friends'],
+      requestId: json['requestId'] != null
+          ? int.parse(json['requestId'].toString())
+          : null,
+      senderId: json['sender_id'] != null
+          ? int.parse(json['sender_id'].toString())
+          : null,
+      penerimaId: json['penerimaId'] != null
+          ? int.parse(json['penerimaId'].toString())
+          : null,
+      temanId: json['temanId'] != null
+          ? int.parse(json['temanId'].toString())
+          : null,
     );
   }
 }
 
 List<Mahasiswa> Mhs = [];
 List<Mahasiswa> requestMhs = [];
+List<Mahasiswa> listkontak = [];

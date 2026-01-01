@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_matchaholic_project_uts/class/mahasiswa.dart';
+import 'package:flutter_matchaholic_project_uts/screen/daftarkontak.dart';
 import 'package:flutter_matchaholic_project_uts/screen/editprofile.dart';
 import 'package:flutter_matchaholic_project_uts/screen/home.dart';
 import 'package:flutter_matchaholic_project_uts/screen/login.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         'home': (context) => const Home(),
         'editprofile': (context) => const Editprofile(),
         'requestlist': (context) => Requestlist(),
+        'kontak': (context) =>Daftarkontak(),
       },
     );
   }
@@ -124,6 +126,13 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.notifications),
             onTap: () {
               Navigator.popAndPushNamed(context, 'requestlist');
+            },
+          ),
+          ListTile(
+            title: const Text("Daftar Kontak"),
+            leading: const Icon(Icons.contacts_rounded),
+            onTap: () {
+              Navigator.popAndPushNamed(context, 'kontak');
             },
           ),
           ListTile(
