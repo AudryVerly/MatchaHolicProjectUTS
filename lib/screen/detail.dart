@@ -65,8 +65,8 @@ class _DetailState extends State<Detail> {
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: Text('Berhasil'),
-          content: Text('Permintaan pertemanan dikirim'),
+          title: Text(title),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () {

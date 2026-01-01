@@ -34,6 +34,10 @@ void doLogout() async {
   final prefs = await SharedPreferences.getInstance();
   prefs.remove("user_id");
   String user_id = prefs.getString("user_id") ?? '';
+
+  loggedInUser = null;
+  Mhs.clear();
+
   main();
 }
 
@@ -53,7 +57,7 @@ class MyApp extends StatelessWidget {
         'home': (context) => const Home(),
         'editprofile': (context) => const Editprofile(),
         'requestlist': (context) => Requestlist(),
-        'kontak': (context) =>Daftarkontak(),
+        'kontak': (context) => Daftarkontak(),
       },
     );
   }
