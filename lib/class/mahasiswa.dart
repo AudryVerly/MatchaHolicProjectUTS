@@ -37,13 +37,13 @@ class Mahasiswa {
   factory Mahasiswa.fromJson(Map<String, dynamic> json) {
     return Mahasiswa(
       id: int.parse(json['id'].toString()),
-      name: json['name'] as String,
-      email: json['email'] as String,
-      password: json['password'] as String,
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      password: json['password']?.toString() ?? '',
       photo: json['photo'] != null ? json['photo'].toString() : '',
-      program: json['program'] as String,
-      nrp: json['nrp'] as String,
-      biografi: json['biografi'] as String,
+      program: json['program']?.toString() ?? '',
+      nrp: json['nrp']?.toString() ?? '',
+      biografi: json['biografi']?.toString() ?? '',
       friendRequest: json['friend_request'],
       friends: json['friends'],
       requestId: json['requestId'] != null
