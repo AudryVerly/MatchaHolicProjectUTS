@@ -17,22 +17,63 @@ class _EditProfileState extends State<Editprofile> {
   String _userProgram = "IMES";
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _photoController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _nameController.text = loggedInUser?.name ?? "Username";
-    _bioController.text = loggedInUser?.biografi ?? "Biografi";
-    _userProgram = loggedInUser!.program!;
+    if (loggedInUser != null) {
+      _nameController.text = loggedInUser!.name;
+      _bioController.text = loggedInUser!.biografi;
+      _photoController.text = loggedInUser!.photo;
+      final userProgram = loggedInUser!.program;
+      _userProgram = allPrograms.contains(userProgram) && userProgram.isNotEmpty
+          ? userProgram
+          : allPrograms.first;
+    } else {
+      _nameController.text = "Username";
+      _bioController.text = "Biografi";
+      _photoController.text = "";
+      _userProgram = allPrograms.first;
+    }
+  }
+
+  @override
+  void dispose() {
+    _bioController.dispose();
+    _nameController.dispose();
+    _photoController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> validateImage(String imageUrl) async {
+    http.Response res;
+    try {
+      res = await http.get(Uri.parse(imageUrl));
+    } catch (e) {
+      return false;
+    }
+    if (res.statusCode != 200) return false;
+    Map<String, dynamic> data = res.headers;
+    if (data['content-type'] == 'image/jpeg' ||
+        data['content-type'] == 'image/png' ||
+        data['content-type'] == 'image/gif') {
+      return true;
+    }
+    return false;
   }
 
   Future<bool> submit() async {
+    if (loggedInUser == null) return false;
+
     final response = await http.post(
       Uri.parse("https://ubaya.cloud/flutter/160422127/editprofile.php"),
       body: {
         'name': _nameController.text,
         'program': _userProgram,
         'biografi': _bioController.text,
+        'photo': _photoController.text,
         'id': loggedInUser!.id.toString(),
       },
     );
@@ -42,6 +83,7 @@ class _EditProfileState extends State<Editprofile> {
         loggedInUser!.name = _nameController.text;
         loggedInUser!.program = _userProgram;
         loggedInUser!.biografi = _bioController.text;
+        loggedInUser!.photo = _photoController.text;
         return true;
       }
       return false;
@@ -50,6 +92,7 @@ class _EditProfileState extends State<Editprofile> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Editprofile')),
@@ -65,208 +108,270 @@ class _EditProfileState extends State<Editprofile> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(loggedInUser?.photo ?? ""),
-                  ),
-                  const SizedBox(height: 15),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          blurRadius: 5,
-                          offset: const Offset(2, 3),
-                        ),
-                      ],
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: _photoController.text.isNotEmpty
+                          ? NetworkImage(_photoController.text)
+                          : null,
+                      child: _photoController.text.isNotEmpty
+                          ? null
+                          : const Icon(Icons.person, size: 40),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Nama:",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                    const SizedBox(height: 15),
+
+                    // URL Photo
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            blurRadius: 5,
+                            offset: const Offset(2, 3),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(controller: _nameController),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          blurRadius: 5,
-                          offset: const Offset(2, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Program / Lab:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        DropdownButton<String>(
-                          value: _userProgram,
-                          //.map_is_a_method_for_iterate_a_list
-                          items: allPrograms.map((program) {
-                            return DropdownMenuItem(
-                              child: Text(program),
-                              value: program,
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _userProgram = value ?? allPrograms[0];
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.4),
-                          blurRadius: 5,
-                          offset: const Offset(2, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Biografi:",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _bioController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          minLines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: WidgetStateProperty.all(5),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          // Navigator.pushNamed(context, 'editprofile');
-                        },
-                        child: const Text('BATAL'),
+                        ],
                       ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: WidgetStateProperty.all(5),
-                        ),
-                        onPressed: () async {
-                          //mengupdate_value_user_yg_lg_login_setelah_diedit
-                          if (loggedInUser == null) return;
-                          bool success = await submit();
-
-                          if (!mounted) return;
-
-                          if (success) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Sukses mengubah data'),
-                              ),
-                            );
-                            // Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Gagal mengubah data'),
-                              ),
-                            );
-                          }
-                          // if (loggedInUser != null) {
-                          // loggedInUser = Mahasiswa(
-                          //   id: loggedInUser!.id,
-                          //   name: _nameController.text,
-                          //   email: loggedInUser!.email,
-                          //   password: loggedInUser!.password,
-                          //   photo: loggedInUser!.photo,
-                          //   program: _userProgram,
-                          //   nrp: loggedInUser!.nrp,
-                          //   biografi: _bioController.text,
-                          // );
-                          // }
-                          //untuk_update_data_user_yg_diedit_di_dlm_array_mahasiswas(Penting!!!)
-                          // int index = mahasiswas.indexWhere(
-                          //   (m) => m.id == loggedInUser!.id,
-                          // );
-                          // if (index != -1) {
-                          //   mahasiswas[index] = loggedInUser!;
-                          // }
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: Text('Edit Profil'),
-                              content: Text('Edit profil berhasil!'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context); // Close dialog
-                                    // Navigator.pushNamed(context, 'editprofile');
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'URL Foto:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                          );
-                        },
-                        child: const Text('SUBMIT'),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            onChanged: (value) {
+                              validateImage(value).then((v) {
+                                setState(() {});
+                              });
+                            },
+                            controller: _photoController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null; // photo optional
+                              }
+                              final uri = Uri.tryParse(value);
+                              if (uri == null || !uri.isAbsolute) {
+                                return 'Alamat URL salah';
+                              }
+                              return null;
+                            },
+                          ),
+                          if (_photoController.text.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Image.network(
+                                _photoController.text,
+                                height: 120,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Text('URL tidak bisa dimuat');
+                                },
+                              ),
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            blurRadius: 5,
+                            offset: const Offset(2, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Nama:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(controller: _nameController),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            blurRadius: 5,
+                            offset: const Offset(2, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Program / Lab:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButton<String>(
+                            value: _userProgram,
+                            //.map_is_a_method_for_iterate_a_list
+                            items: allPrograms.map((program) {
+                              return DropdownMenuItem(
+                                child: Text(program),
+                                value: program,
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _userProgram =
+                                    value != null && allPrograms.contains(value)
+                                    ? value
+                                    : allPrograms.first;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.4),
+                            blurRadius: 5,
+                            offset: const Offset(2, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Biografi:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _bioController,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            minLines: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(5),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            // Navigator.pushNamed(context, 'editprofile');
+                          },
+                          child: const Text('BATAL'),
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(5),
+                          ),
+                          onPressed: () async {
+                            var state = _formKey.currentState;
+                            if (state == null || !state.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Harap isian diperbaiki'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            if (loggedInUser == null) return;
+                            bool success = await submit();
+
+                            if (!mounted) return;
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Sukses mengubah data'),
+                                ),
+                              );
+                              // Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Gagal mengubah data'),
+                                ),
+                              );
+                            }
+
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Edit Profil'),
+                                content: const Text('Edit profil berhasil!'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close dialog
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: const Text('SUBMIT'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
